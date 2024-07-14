@@ -1,0 +1,62 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}{{ problem.title }}{% endblock title %}
+
+{% block main-content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card mt-5">
+                    <div class="card-body">
+                        <h1 class="card-title">Submission Result for {{ problem.title }}</h1>
+                        
+                        {% if run %}
+                            <div class="mt-4">
+                                <h2>Run Code Result</h2>
+                                <p class="card-text">Generated Output:</p>
+                                <pre>{{ output_data|linebreaks }}</pre>
+                            </div>
+                        {% elif submission_done %}
+                            <div class="mt-4">
+                                <h2>Submission Result</h2>
+                                {% if submission.status == 'Accepted' %}
+                                    <p class="card-text text-success">Status: {{ submission.status }}</p>
+                                {% else %}
+                                    <p class="card-text text-danger">Status: {{ submission.status }}</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        {% if error %}
+                            <div class="mt-4">
+                                <p class="text-danger">Error: {{ error }}</p>
+                            </div>
+                        {% endif %}
+
+                        {% if submission_done %}
+                        <div class="mt-4">
+                            <h2>Test Case Results:</h2>
+                            <div class="d-flex flex-wrap">
+                                {% for testcase in submission_test_cases %}
+                                    <div class="testcase-box {% if testcase.is_passed %}bg-success{% else %}bg-danger{% endif %} text-white mr-2 mb-2 p-2">
+                                        Test Case {{ forloop.counter }}
+                                        {% if not testcase.is_passed %}
+                                            {{ break }}
+                                        {% endif %}
+                                    </div>
+                                    &nbsp; <!-- Add a non-breaking space here for separation -->
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="mt-4">
+                            <a href="{% url 'problem_detail' problem.id %}" class="btn btn-primary">Back to Problem</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main-content %}

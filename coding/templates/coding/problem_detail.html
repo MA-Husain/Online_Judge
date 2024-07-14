@@ -1,0 +1,308 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}{{ problem.title }}{% endblock title %}
+
+{% block extra-head %}
+<!-- CodeMirror CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css">
+
+<!-- CodeMirror JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/markdown/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/addon/display/placeholder.min.js"></script>
+{% endblock extra-head %}
+
+{% block main-content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Side: Problem Details -->
+        <div class="col-md-6 p-4" style="border-right: 1px solid #ccc; overflow-y: scroll; max-height: 80vh;">
+            <!-- Submission Tabs -->
+            <ul class="nav nav-tabs mb-4" id="submissionTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="problem-details-tab" data-bs-toggle="tab" data-bs-target="#problem-details" type="button" role="tab" aria-controls="problem-details" aria-selected="true">Problem Details</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="all-submissions-tab" data-bs-toggle="tab" data-bs-target="#all-submissions" type="button" role="tab" aria-controls="all-submissions" aria-selected="false">All Submissions</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="my-submissions-tab" data-bs-toggle="tab" data-bs-target="#my-submissions" type="button" role="tab" aria-controls="my-submissions" aria-selected="false">My Submissions</button>
+                </li>
+            </ul>
+
+            <!-- Problem Details -->
+            <div class="tab-content" id="submissionTabsContent">
+                <!-- Problem Details Content -->
+                <div class="tab-pane fade show active" id="problem-details" role="tabpanel" aria-labelledby="problem-details-tab">
+                    <h2><strong>{{ problem.title }}</strong></h2>
+                    
+                    <p><strong>Difficulty:</strong>
+                        {% if problem.difficulty == 'easy' %}
+                            <span class="badge bg-success">Easy</span>
+                        {% elif problem.difficulty == 'medium' %}
+                            <span class="badge bg-warning text-dark">Medium</span>
+                        {% elif problem.difficulty == 'hard' %}
+                            <span class="badge bg-danger">Hard</span>
+                        {% endif %}
+                    </p>
+                    <div class="tags-section">
+                        <button id="toggle-tags-btn" class="btn btn-secondary mb-2">Show Tags</button>
+                        <div id="tags-container" style="display: none;">
+                            {% for tag in problem.tags.all %}
+                                <span class="badge bg-primary">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p>{{ problem.description }}</p>
+                </div>
+
+                <!-- All Submissions Content -->
+                <div class="tab-pane fade" id="all-submissions" role="tabpanel" aria-labelledby="all-submissions-tab">
+                    <div class="container mt-4">
+                        <h3>All Submissions</h3>
+                        <div id="allSubmissionsContent" style="overflow-x: auto;">
+                            <!-- Content for all submissions tab will be dynamically loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Submissions Content -->
+                <div class="tab-pane fade" id="my-submissions" role="tabpanel" aria-labelledby="my-submissions-tab">
+                    <div class="container mt-4">
+                        <h3>My Submissions</h3>
+                        <div id="mySubmissionsContent" style="overflow-x: auto;">
+                            <!-- Content for my submissions tab will be dynamically loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Coding Interface -->
+        <div class="col-md-6 p-4" style="overflow-y: scroll; max-height: 80vh;">
+            <!-- Form for code submission -->
+            <form method="post" novalidate class="shadow p-4" id="code-form">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="language" class="form-label"><strong>Language</strong></label>
+                    {{ form.language }}
+                </div>
+                <div class="mb-3">
+                    <label for="code" class="form-label"><strong>Code</strong></label>
+                    <textarea id="code" name="code" class="form-control" rows="15">{{ form.initial.code }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="input_data" class="form-label"><strong>Custom Input</strong></label>
+                    <textarea id="input_data" name="input_data" class="form-control" rows="5">{{ form.initial.input_data }}</textarea>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button type="submit" name="run" class="btn btn-primary">Run</button>
+                    <button type="submit" name="submit" class="btn btn-success">Submit</button>
+                </div>
+            </form> 
+            <div id="loading-message" style="display:none;">
+                <p class="text-center text-warning">Running...</p>
+            </div>
+
+            <!-- Modal for displaying code -->
+            <div class="modal fade" id="codeModal" tabindex="-1" aria-labelledby="codeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="codeModalLabel">Submission Code</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <pre><code id="codeContent"></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Function to fetch submissions data and update tab content
+                function formatDate(dateString) {
+                    const options = { 
+                        weekday: 'short', 
+                        day: '2-digit', 
+                        month: 'short', 
+                        year: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                    };
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('en-US', options);
+                }
+                function fetchSubmissions(url, tabId) {
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            let submissionsContent = '';
+                            data.submissions.forEach(submission => {
+                                let statusColor;
+                                if (submission.status === 'Accepted') {
+                                    statusColor = 'text-success';
+                                } else if (submission.status === 'Pending') {
+                                    statusColor = 'text-warning';
+                                } else {
+                                    statusColor = 'text-danger';
+                                }
+                
+                                const createdAtFormatted = formatDate(submission.created_at);
+                
+                                submissionsContent += `
+                                    <div class="submission-details mb-2 p-2 border-bottom">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold ${statusColor}">Submission Status: ${submission.status}</span>
+                                            <button class="btn btn-primary btn-sm" onclick="showCode('${submission.id}')">View Code</button>
+                                        </div>
+                                        <div class="submission-meta">
+                                            <span class="fw-bold">Username:</span> ${submission.user__username} &nbsp;|&nbsp; 
+                                            <span class="fw-bold">Language:</span> ${submission.language} &nbsp;|&nbsp; 
+                                            <span class="fw-bold">Created At:</span> ${createdAtFormatted}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            document.getElementById(tabId).innerHTML = submissionsContent;
+                        })
+                        .catch(error => console.error('Error fetching submissions:', error));
+                }
+                // Function to show code for a specific submission
+                function showCode(submissionId) {
+                    fetch(`/submission/code/${submissionId}/`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Update modal content with the fetched code
+                            document.getElementById('codeContent').textContent = data.code;
+                
+                            // Show the Bootstrap modal
+                            var codeModal = new bootstrap.Modal(document.getElementById('codeModal'));
+                            codeModal.show();
+                        })
+                        .catch(error => console.error('Error fetching code:', error));
+                }
+
+                // Initialize CodeMirror for the code editor
+                var codeEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
+                    lineNumbers: true,
+                    mode: "python", // Set initial mode, e.g., 'python'
+                    theme: "dracula",
+                    matchBrackets: true,
+                    autoCloseBrackets: true,
+                    styleActiveLine: true,
+                });
+                codeEditor.setSize("100%", "400");
+
+                // Function to update the CodeMirror mode based on selected language
+                document.getElementById("id_language").addEventListener("change", function() {
+                    var selectedLanguage = this.value;
+                    var mode = "text/plain"; // Default mode
+                    defaultCode = `print('Hello World')`;
+                    if (selectedLanguage === "py") {
+                        mode = "python";
+                        defaultCode = `print('Hello World')`;
+                    } else if (selectedLanguage === "cpp") {
+                        mode = "text/x-c++src";
+                        defaultCode = `#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    cout << "Hello World";
+    return 0;
+}`;
+                    } else if (selectedLanguage === "java") {
+                        mode = "text/x-java";
+                        defaultCode = `//Java code must contain a public class Main with a main method.
+                        
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello World");
+    }
+}`;
+                    } else if (selectedLanguage === "javascript") {
+                        mode = "javascript";
+                    } else if (selectedLanguage === "html") {
+                        mode = "htmlmixed";
+                    } else if (selectedLanguage === "markdown") {
+                        mode = "markdown";
+                    }
+                    codeEditor.setOption("mode", mode);
+                    if (defaultCode) {
+                        codeEditor.setValue(defaultCode);
+                    }
+                });
+
+                // Initialize CodeMirror for the input data editor
+                var inputEditor = CodeMirror.fromTextArea(document.getElementById("input_data"), {
+                    lineNumbers: true,
+                    mode: "text/plain", // Set mode for input data
+                    theme: "dracula",
+                    matchBrackets: true,
+                    autoCloseBrackets: true,
+                    styleActiveLine: true,
+                });
+                inputEditor.setSize("100%", "200");
+                // Event listeners for tab clicks to fetch data
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.getElementById('all-submissions-tab').addEventListener('click', function() {
+                        fetchSubmissions('{% url 'all_submissions' problem.id %}', 'allSubmissionsContent');
+                    });
+
+                    document.getElementById('my-submissions-tab').addEventListener('click', function() {
+                        fetchSubmissions('{% url 'my_submissions' problem.id %}', 'mySubmissionsContent');
+                    });
+                });
+
+                // Event listener for code submission form
+                document.getElementById('code-form').addEventListener('submit', function() {
+                    document.getElementById('loading-message').style.display = 'block';
+                });
+
+                // Event listener for tab switching to clear loading message
+                document.getElementById('submissionTabs').addEventListener('click', function() {
+                    document.getElementById('loading-message').style.display = 'none';
+                });
+
+                // Tab initialization
+                var submissionTabs = new bootstrap.Tab(document.getElementById('submissionTabs'));
+                submissionTabs.show('problem-details');
+
+
+            </script>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var toggleBtn = document.getElementById('toggle-tags-btn');
+        var tagsContainer = document.getElementById('tags-container');
+
+        toggleBtn.addEventListener('click', function() {
+            if (tagsContainer.style.display === 'none') {
+                tagsContainer.style.display = 'block';
+                toggleBtn.textContent = 'Hide Tags';
+            } else {
+                tagsContainer.style.display = 'none';
+                toggleBtn.textContent = 'Show Tags';
+            }
+        });
+    });
+</script>
+{% endblock main-content %}

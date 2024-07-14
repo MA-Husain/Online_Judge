@@ -1,0 +1,36 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block title %}About Us{% endblock title %}
+
+{% block main-content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <h1 class="display-4 mb-4">About Us</h1>
+            <p class="lead mb-5">This project is built by an individual programmer and is open for contributions. It aims to provide a platform for programmers to solve problems, share solutions, and learn from each other.</p>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Our Mission</h5>
+                    <p class="card-text">Our mission is to create an open platform where programmers can improve their skills by solving problems, sharing their solutions, and learning from the community. We believe in collaborative learning and open-source contribution.</p>
+                </div>
+            </div>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Contribute</h5>
+                    <p class="card-text">We welcome contributions from developers of all levels. Whether you want to add new problems, improve existing solutions, or enhance the platform itself, your contributions are highly valued. Join us in making this project better!</p>
+                </div>
+            </div>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Contact Us</h5>
+                    <p class="card-text">If you have any questions or suggestions, feel free to reach out. You can contact us at <a href="mailto:picodetoinspire@gmail.com">picodetoinspire@gmail.com</a>. We look forward to hearing from you!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main-content %}

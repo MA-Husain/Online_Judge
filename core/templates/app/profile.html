@@ -1,0 +1,28 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block title %}Profile{% endblock title %}
+
+{% block main-content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Profile</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Username:</strong> {{ profile_info.username }}</p>
+                    <p><strong>Email:</strong> {{ profile_info.email }}</p>
+                    <p><strong>Name:</strong> {{ profile_info.name }}</p>
+                    <p><strong>Location:</strong> {{ profile_info.location }}</p>
+                    <p><strong>Account Created At:</strong> {{ profile_info.created_at }}</p>
+                    <p><strong>Last Login:</strong> {{ profile_info.last_login }}</p>
+                    <p><strong>Problems Solved:</strong> {{ profile_info.problems_solved }}</p>
+                    <a href="{% url 'profile' %}?edit=true" class="btn btn-success">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main-content %}

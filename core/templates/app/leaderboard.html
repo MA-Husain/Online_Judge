@@ -1,0 +1,51 @@
+<!-- leaderboard.html -->
+
+{% extends 'app/base.html' %}
+{% block title %}Leaderboard{% endblock title %}
+
+{% block main-content %}
+<div class="container mt-4">
+  <h2>Leaderboard</h2>
+  <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Problems Solved</th>
+            <th>Last Solved Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in leaderboard_data %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ user.user.username }}</td>
+            <td>{{ user.problems_solved }}</td> <!-- Display problems_solved -->
+            <td>{{ user.last_solved_date|date:"D d M Y H:i:s" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No users found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    {% if leaderboard_data.has_previous %}
+    <a href="?page=1">&laquo; First</a>
+    <a href="?page={{ leaderboard_data.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span class="current">
+      Page {{ leaderboard_data.number }} of {{ leaderboard_data.paginator.num_pages }}.
+    </span>
+
+    {% if leaderboard_data.has_next %}
+    <a href="?page={{ leaderboard_data.next_page_number }}">Next</a>
+    <a href="?page={{ leaderboard_data.paginator.num_pages }}">Last &raquo;</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock main-content %}

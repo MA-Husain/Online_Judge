@@ -1,0 +1,61 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block title %}HOME{% endblock title %}
+
+{% block main-content %}
+    <div class="container text-center my-5">
+        <h1>Choose your Section to Solve Problems</h1>
+        <hr class="my-4" style="border-top: 2px solid #ccc;">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+              <div class="card h-100">
+                <img src="{% static 'app/images/Arrays.png' %}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">Arrays</h5>
+                  <p class="card-text">Arrays are data structures that store elements of the same type in a contiguous memory location, allowing efficient access via indices.</p>
+                </div>
+                <div class="card-footer">
+                  <a href="{% url 'sections' 'arrays' %}" class="btn btn-success">Go to Problems</a>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card h-100">
+                <img src="{% static 'app/images/Binary_Search.png' %}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">Binary Search</h5>
+                  <p class="card-text">Binary search is an efficient algorithm for finding an item from a sorted list of items, repeatedly dividing the search interval in half.</p>
+                </div>
+                <div class="card-footer">
+                  <a href="{% url 'sections' 'BS' %}" class="btn btn-success">Go to Problems</a>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card h-100">
+                <img src="{% static 'app/images/Dynamic_Programming.png' %}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">Dynamic Programming</h5>
+                  <p class="card-text">Dynamic programming is a method for solving complex problems by breaking them down into simpler subproblems and storing the results to avoid redundant computations.</p>
+                </div>
+                <div class="card-footer">
+                  <a href="{% url 'sections' 'DP' %}" class="btn btn-success">Go to Problems</a>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card h-100">
+                <img src="{% static 'app/images/Graphs.png' %}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">Graphs</h5>
+                  <p class="card-text">Graphs are data structures that consist of nodes (vertices) connected by edges, used to model relationships and networks in various fields.</p>
+                </div>
+                <div class="card-footer">
+                  <a href="{% url 'sections' 'graphs' %}" class="btn btn-success">Go to Problems</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+    </div>
+{% endblock main-content %}

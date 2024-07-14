@@ -1,0 +1,27 @@
+# Python
+*.pyc
+__pycache__/
+
+# Django
+db.sqlite3
+*.log
+
+# Django Migrations
+*/migrations/*
+
+# Environment Variables
+.env
+
+# Static and Media files
+static/
+media/
+
+# PyCharm
+.idea/
+
+# VSCode
+.vscode/
+
+# Docker
+Dockerfile
+.dockerignore

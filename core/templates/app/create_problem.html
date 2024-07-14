@@ -1,0 +1,42 @@
+{% extends 'app/base.html' %}
+{% block title %}Create Problem{% endblock title %}
+
+{% block main-content %}
+<div class="container mb-4">
+  <h2>Create Problem</h2>
+  <form id="create-problem-form" method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      {{ problem_form.title.label_tag }}
+      {{ problem_form.title }}
+    </div>
+    <div class="mb-3">
+      {{ problem_form.description.label_tag }}
+      {{ problem_form.description }}
+    </div>
+    <div class="mb-3">
+      {{ problem_form.difficulty.label_tag }}
+      {{ problem_form.difficulty }}
+    </div>
+    <div class="mb-3">
+      <label for="{{ problem_form.tags.id_for_label }}">Tags:</label><br>
+      {% for tag in problem_form.tags %}
+        <div class="form-check">
+          {{ tag.tag }} {{ tag }}
+        </div>
+      {% endfor %}
+    </div>
+    <button type="button" class="btn btn-success mt-3" id="create-and-add-test-cases-btn">Create Problem and Add Test Cases</button>
+  </form>
+</div>
+
+{% block scripts %}
+<script>
+  document.getElementById('create-and-add-test-cases-btn').addEventListener('click', function() {
+    if (confirm('Are you sure you want to create the problem and add test cases?')) {
+      document.getElementById('create-problem-form').submit();
+    }
+  });
+</script>
+{% endblock scripts %}
+{% endblock main-content %}

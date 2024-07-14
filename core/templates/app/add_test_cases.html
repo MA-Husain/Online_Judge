@@ -1,0 +1,63 @@
+{% extends 'app/base.html' %}
+{% block title %}Add Test Cases{% endblock title %}
+
+{% block main-content %}
+<div class="container mb-4">
+  <h2>Add Test Cases for {{ problem.title }}</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <div class="formset" id="formset">
+      {% for form in formset %}
+      <div class="mb-3 form-row">
+        <div class="col">
+          {{ form.input.label_tag }}
+          {{ form.input }}
+        </div>
+        <div class="col">
+          {{ form.expected_output.label_tag }}
+          {{ form.expected_output }}
+        </div>
+        {{ form.DELETE }}
+        <button type="button" class="btn btn-danger remove-form">Delete</button>
+      </div>
+      {% endfor %}
+    </div>
+    <button type="button" class="btn btn-secondary" id="add-form">Add Test Case</button>
+    <button type="submit" class="btn btn-primary mt-3">Submit Test Cases</button>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const formset = document.getElementById('formset');
+    const addFormButton = document.getElementById('add-form');
+    let formCount = {{ formset.total_form_count }};
+    
+    addFormButton.addEventListener('click', function() {
+      const newForm = formset.children[0].cloneNode(true);
+      const formRegex = RegExp(`form-(\\d){1,2}-`, 'g');
+      
+      formCount++;
+      newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount}-`);
+      formset.appendChild(newForm);
+      
+      document.getElementById('id_form-TOTAL_FORMS').value = formCount + 1;
+      bindDeleteButtons();
+    });
+
+    function bindDeleteButtons() {
+      const deleteButtons = document.querySelectorAll('.remove-form');
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          button.parentElement.remove();
+          formCount--;
+          document.getElementById('id_form-TOTAL_FORMS').value = formCount;
+        });
+      });
+    }
+
+    bindDeleteButtons();
+  });
+</script>
+{% endblock main-content %}

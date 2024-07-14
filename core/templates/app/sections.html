@@ -1,0 +1,27 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block title %}{{ tag.name }} Problems {% endblock title %}
+
+{% block main-content %}
+    <div class = "container">
+      <h1>{{ tag.name }} Problems</h1>
+      <ol class="list-group list-group-numbered">
+        {% for problem in problems %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{% url 'problem_detail' problem.id %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center w-100">
+              <div class="ms-2 me-auto">
+                {{ problem.title }}
+              </div>
+              {% if problem.difficulty == 'easy' %}
+                <span class="badge text-bg-success rounded-pill">{{ problem.difficulty }}</span>
+              {% elif problem.difficulty == 'medium' %}
+                <span class="badge text-bg-warning rounded-pill">{{ problem.difficulty }}</span>
+              {% else %}
+                <span class="badge text-bg-danger rounded-pill">{{ problem.difficulty }}</span>
+              {% endif %}
+            </a>
+          </li>
+        {% endfor %}
+      </ol>      
+    </div>
+{% endblock main-content %}
