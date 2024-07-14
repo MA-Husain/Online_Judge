@@ -3,7 +3,8 @@
 Welcome to the Online Judge project! This repository contains the latest code updates for the project, including link to the website and a project demo video link.
 
 ## Table of Contents
-- [Online Judge Project](#online-judge-project)
+- Online Judge Project
+  
   - [Table of Contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Features](#features)
